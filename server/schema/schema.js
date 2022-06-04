@@ -1,11 +1,13 @@
 const graphql = require('graphql');
 const _ = require('lodash');
+const books = require('../data/books');
 
 const { 
   GraphQLObjectType, 
   GraphQLString, 
   GraphQLSchema,
-  GraphQLID
+  GraphQLID,
+  GraphQLList
  } = graphql;
 
 const BookType = new GraphQLObjectType({
@@ -25,6 +27,12 @@ const RootQuery = new GraphQLObjectType({
       args: {id: {type: GraphQLString}},
       resolve(parent, args) {
         return _.find(books, {id: args.id});
+      }
+    },
+    allBooks: {
+      type: GraphQLList(BookType),
+      resolve() {
+        return books;
       }
     }
   }
