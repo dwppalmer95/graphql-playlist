@@ -18,6 +18,7 @@ function BookList() {
     if (loading) {
       return (<div>Loading...</div>)
     } else {
+      console.log(data)
       console.log(data.allBooks);
       return data.allBooks.map(book => {
         return (<li key={book.id}>{book.name}</li>)
