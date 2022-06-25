@@ -1,7 +1,11 @@
 {
   "dependencies": {
     "@apollo/client": "^3.6.6",
+    "@graphql-tools/schema": "^8.4.0",
+    "apollo-server-core": "^3.9.0",
     "graphql": "^16.5.0",
-    "tar": "^6.1.11"
+    "graphql-ws": "^5.9.0",
+    "tar": "^6.1.11",
+    "ws": "^8.8.0"
   }
 }
