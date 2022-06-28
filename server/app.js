@@ -3,35 +3,34 @@ const {graphqlHTTP} = require('express-graphql');
 const schema = require('./schema/schema');
 const cors = require('cors');
 const { ApolloServer, gql } = require('apollo-server');
-const books = require('../data/books');
+const books = require('./data/books.js');
+const _ = require('lodash');
 
-const typedefs = gql`
+const typeDefs = gql`
   type Book {
-    id: ID
+    id: ID!
     name: String
     genre: String
   }
 
   type Query {
-    book: Book
+    book(id: ID!): Book
     allBooks: [Book]
   }
 `;
 
 const resolvers = {
   Query: {
-    books: _.find(books, {id: args.id}),
+    book: (parent, args) => _.find(books, {id: args.id}),
+    allBooks: () => books,
   },
 }
 
-const app = express();
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  csrfPrevention: true,
+  cache: 'bounded',
+});
 
-app.use(cors());
-
-app.use('/graphql', graphqlHTTP({
-  schema,
-  graphiql: true
-}))
-
-const port = 4000;
-app.listen(port, () => console.log(`Listening for requests on port ${port}`));
+server.listen().then(({ url }) => console.log(`Server listening at ${url}`));
