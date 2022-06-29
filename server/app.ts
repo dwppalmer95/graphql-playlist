@@ -1,9 +1,8 @@
-const express = require('express');
-const {graphqlHTTP} = require('express-graphql');
-const cors = require('cors');
-const { ApolloServer, gql } = require('apollo-server');
-const books = require('./data/books.js');
+import { books } from './data/books.js';
 import _ from 'lodash';
+import express from 'express';
+import { gql } from 'apollo-server';
+import { ApolloServer } from 'apollo-server-express';
 import { createServer } from 'http';
 import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
 import { makeExecutableSchema } from '@graphql-tools/schema';
@@ -47,9 +46,21 @@ const server = new ApolloServer({
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),
     {
-      
+      async serverWillStart() {
+        return {
+          async drainServer() {
+            await serverCleanup.dispose();
+          },
+        };
+      },
     }
   ]
 });
 
-server.listen().then(({ url }) => console.log(`Server listening at ${url}`));
+await server.start();
+server.applyMiddleware({ app });
+
+const PORT = 4000;
+httpServer.listen(PORT, () => {
+  console.log(`Server is now running on http://localhost:${PORT}${server.graphqlPath}`);
+});

@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "server",
   "version": "1.0.0",
   "description": "",
@@ -14,6 +15,7 @@
     "@graphql-tools/schema": "^8.5.0",
     "apollo-server": "^3.9.0",
     "apollo-server-core": "^3.9.0",
+    "apollo-server-express": "^3.9.0",
     "cors": "^2.8.5",
     "express": "^4.18.1",
     "express-graphql": "^0.12.0",
@@ -21,9 +23,12 @@
     "graphql-ws": "^5.9.0",
     "lodash": "^4.17.21",
     "nodemon": "^2.0.16",
+    "ts-node": "^10.8.1",
     "ws": "^8.8.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.182"
+    "@types/lodash": "^4.14.182",
+    "@types/ws": "^8.5.3",
+    "typescript": "^4.7.4"
   }
 }
