@@ -1,4 +1,4 @@
-import { books } from './data/books.js';
+// import { books } from './data/books.js';
 import _ from 'lodash';
 import express from 'express';
 import { gql } from 'apollo-server';
@@ -11,12 +11,18 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 import { PubSub } from 'graphql-subscriptions';
 import { textSpanContainsPosition } from 'typescript';
 
+const books = [
+  {name: 'Name of the Wind', genre: 'Fantasy', id: 1},
+  {name: 'The Final Empire', genre: 'Fantasy', id: 2},
+  {name: 'The Long Earth', genre: 'Sci-Fi', id: 3},
+];    
+
 const PORT = 4000;
 const pubsub = new PubSub();
 
 const typeDefs = gql`
   type Book {
-    id: ID!
+    id: Int
     name: String
     genre: String
   }
@@ -27,6 +33,7 @@ const typeDefs = gql`
   }
 
   type Subscription {
+    numberIncremented: Int
     bookAdded: Book
   }
 `;
@@ -39,7 +46,10 @@ const resolvers = {
   Subscription: {
     bookAdded: {
       subscribe: () => pubsub.asyncIterator(["BOOK_ADDED"])
-    }
+    },
+    numberIncremented: {
+      subscribe: () => pubsub.asyncIterator(["NUMBER_INCREMENTED"]),
+    },
   }
 };
 
@@ -79,14 +89,21 @@ httpServer.listen(PORT, () => {
 });
 
 let i = 0;
-const addBooks = () => {
-    const book = {
-      id: i,
-      name: 'testName',
-      genre: 'testGenre'
-    };
+const incrementNumber = () => {
     i++;
-    pubsub.publish("BOOK_ADDED", book);
-    books.push(book);
-    setTimeout(addBooks, 1000);
+    pubsub.publish("NUMBER_INCREMENTED", { numberIncremented: i });
+    setTimeout(incrementNumber, 2000);
 }
+const addBook = () => {
+  const book = {
+    id: i,
+    name: 'testName',
+    genre: 'testGenre'
+  };
+  i++;
+  console.log(book);
+  pubsub.publish('BOOK_ADDED', { bookAdded: book });
+  setTimeout(addBook, 2000);
+}
+
+addBook();
