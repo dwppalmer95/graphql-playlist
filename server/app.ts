@@ -8,6 +8,11 @@ import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
+import { PubSub } from 'graphql-subscriptions';
+import { textSpanContainsPosition } from 'typescript';
+
+const PORT = 4000;
+const pubsub = new PubSub();
 
 const typeDefs = gql`
   type Book {
@@ -20,6 +25,10 @@ const typeDefs = gql`
     book(id: ID!): Book
     allBooks: [Book]
   }
+
+  type Subscription {
+    bookAdded: Book
+  }
 `;
 
 const resolvers = {
@@ -27,6 +36,11 @@ const resolvers = {
     book: (parent, args) => _.find(books, {id: args.id}),
     allBooks: () => books,
   },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(["BOOK_ADDED"])
+    }
+  }
 };
 
 const app = express();
@@ -60,7 +74,19 @@ const server = new ApolloServer({
 await server.start();
 server.applyMiddleware({ app });
 
-const PORT = 4000;
 httpServer.listen(PORT, () => {
   console.log(`Server is now running on http://localhost:${PORT}${server.graphqlPath}`);
 });
+
+let i = 0;
+const addBooks = () => {
+    const book = {
+      id: i,
+      name: 'testName',
+      genre: 'testGenre'
+    };
+    i++;
+    pubsub.publish("BOOK_ADDED", book);
+    books.push(book);
+    setTimeout(addBooks, 1000);
+}
