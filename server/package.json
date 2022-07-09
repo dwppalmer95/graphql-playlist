@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start-dev": "nodemon app.js",
+    "start-dev": "npx ts-node app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

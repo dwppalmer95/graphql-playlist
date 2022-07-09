@@ -54,6 +54,10 @@ const resolvers = {
 };
 
 const app = express();
+app.use((req, res, next) => {
+  console.log(req.headers.upgrade);
+  next();
+})
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 const httpServer = createServer(app);
@@ -101,7 +105,7 @@ const addBook = () => {
     genre: 'testGenre'
   };
   i++;
-  console.log(book);
+  // console.log(book);
   pubsub.publish('BOOK_ADDED', { bookAdded: book });
   setTimeout(addBook, 2000);
 }
